@@ -509,4 +509,10 @@ async function refreshPrices(force){
  else setStatus("part","Live prices · "+when+" · "+ok+" live, "+(fail+bad)+" on last close"+(bad?(" ("+bad+" rejected)"):"")+".");
 }
 
-document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("active");});document.querySelectorAll(".panel").forEach(function(x){x.classList.remove("active");});t.classL
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("active");});document.querySelectorAll(".panel").forEach(function(x){x.classList.remove("active");});t.classList.add("active");document.getElementById(t.dataset.t).classList.add("active");});});
+
+renderAll();
+refreshPrices(false);
+</script>
+</body>
+</html>
