@@ -181,7 +181,7 @@ const SNAP_DATE = "2026-06-03";
 const BASE = {BR:151.59,RELX:33.15,SPGI:409.10,EFX:166.51,VRSK:176.92,MKTX:122.43,FDS:246.81,DHR:175.36,IQV:178.01,ZTS:76.48,CSGP:32.21,APH:149.49,FER:66.13,OTIS:70.21,SAP:182.08,FISV:54.06,NEE:85.71,MSFT:432.84,GOOG:357.62,NVDA:216.10,TYL:304.45,VEEV:175.65,NOW:123.11,INTU:313.15,CRM:193.79,WDAY:145.93,TRI:83.69,ADBE:255.01,MDLZ:61.73,STZ:135.81,ELV:394.69,UNH:385.09,PEP:142.22,TSCO:29.27,YUMC:43.26,O:60.36,GNTX:24.98,CL:86.05,DEO:79.06,CLX:88.72,RBGLY:12.17,ZBH:85.50,SONY:22.28,CPB:21.32,GIS:32.79,D:66.43,PYPL:43.04,NICE:94.88,FLO:7.26};
 const PROXIES = [function(u){return "https://api.codetabs.com/v1/proxy?quest="+encodeURIComponent(u);},function(u){return "https://api.allorigins.win/raw?url="+encodeURIComponent(u);},function(u){return "https://corsproxy.io/?url="+encodeURIComponent(u);},function(u){return "https://thingproxy.freeboard.io/fetch/"+u;}];
 // OPTIONAL: paste a free finnhub.io API key between the quotes for the most reliable live prices (price + day's % change). Leave blank to use the keyless Yahoo/Stooq sources.
-const FINNHUB_KEY = "";
+const FINNHUB_KEY = "d8g43fhr01qlgcuh44vgd8g43fhr01qlgcuh4500";
 
 const RAW = [
  {"ticker":"BR","company":"Broadridge","moat":"Wide","price":153.72,"buyBelow":165,"loadUp":112,"expReturnRaw":"~14%","expReturnMid":14.0,"oeps":9.00,"growth":8.2,"crux":"Statutory proxy-delivery utility — AI-proof regulatory moat","catalyst":"Q4 FY26 (~Jul)"},
@@ -512,7 +512,4 @@ async function refreshPrices(force){
 document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("active");});document.querySelectorAll(".panel").forEach(function(x){x.classList.remove("active");});t.classList.add("active");document.getElementById(t.dataset.t).classList.add("active");});});
 
 renderAll();
-refreshPrices(false);
-</script>
-</body>
-</html>
+refreshP
