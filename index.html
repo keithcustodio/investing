@@ -316,8 +316,8 @@ function plausible(price,snap){return typeof price==="number"&&price>0&&price>sn
 function recompute(r){if(r.oeps!=null){r.oeYield=r.oeps/r.price*100;r.impliedMid=r.oeYield+r.growth;r.retDisplay=r.impliedMid.toFixed(1)+"%";r.retLive=true;}else{r.impliedMid=r.expReturnMid;r.retDisplay=r.expReturnRaw;r.retLive=false;}r.pctToEntry=entryDist(r);r.score=(r.impliedMid!=null&&r.convScore!=null)?r.impliedMid*r.convScore/100:null;}
 RAW.forEach(function(r){r.gate=gateOf(r);r.moat100=MOAT[r.ticker];r.convScore=CONV[r.ticker];r.updDate=UPD[r.ticker]?UPD[r.ticker].d:null;r.snapPrice=(BASE[r.ticker]!=null?BASE[r.ticker]:r.price);r.price=r.snapPrice;r.live=false;r.chgPct=null;recompute(r);});
 var passRows=RAW.filter(function(r){return r.gate==="pass";});
-var CUTX={CL:{fs:"Strong",cv:62,hv:"harvested",im:9},DEO:{fs:"Stretched",cv:62,hv:"mixed",im:10},CLX:{fs:"Stretched",cv:60,hv:"harvested",im:10.5},RBGLY:{fs:"Adequate",cv:55,hv:"mixed",im:11.5},ZBH:{fs:"Adequate",cv:60,hv:"mixed",im:11},SONY:{fs:"Strong",cv:52,hv:"mixed",im:11},CPB:{fs:"Stretched",cv:55,hv:"mixed",im:10.5},GIS:{fs:"Adequate",cv:58,hv:"harvested",im:11},D:{fs:"Stretched",cv:55,hv:"reinvested",im:10},PYPL:{fs:"Strong",cv:60,hv:"harvested",im:12},NICE:{fs:"Strong",cv:55,hv:"reinvested",im:13},FLO:{fs:"Adequate",cv:58,hv:"harvested",im:13}};
-var cutRows=CUT.map(function(c){var x=CUTX[c.t]||{};return {ticker:c.t,company:c.c,moat100:c.m,gate:"cut",cutRsn:c.rsn,crux:c.w,price:(BASE[c.t]!=null?BASE[c.t]:(typeof c.p==="number"?c.p:0)),snapPrice:(BASE[c.t]!=null?BASE[c.t]:(typeof c.p==="number"?c.p:0)),live:false,chgPct:null,retLive:false,retDisplay:(c.ret||"—"),impliedMid:(x.im!=null?x.im:null),mdir:c.mdir,hv:x.hv,fs:x.fs,convScore:x.cv,score:(x.im!=null&&x.cv!=null?x.im*x.cv/100:null),catalyst:(c.cat||"—"),updDate:"2026-06-02",updW:"Cut from the universe 2026-06-02 ("+c.rsn+")."};});
+var CUTX={CL:{m:55,fs:"Strong",cv:72,hv:"harvested",oeps:3.55,growth:4.0},DEO:{m:52,fs:"Stretched",cv:72,hv:"mixed",oeps:5.21,growth:3.5},CLX:{m:42,fs:"Adequate",cv:26,hv:"harvested",oeps:6.25,growth:3.5},RBGLY:{m:42,fs:"Adequate",cv:55,hv:"mixed",oeps:0.81,growth:3.5},ZBH:{m:52,fs:"Adequate",cv:72,hv:"mixed",oeps:7.70,growth:4.5},SONY:{m:42,fs:"Adequate",cv:70,hv:"mixed",oeps:1.05,growth:7.0},CPB:{m:32,fs:"Weak",cv:83,hv:"mixed",oeps:2.40,growth:2.0},GIS:{m:32,fs:"Stretched",cv:82,hv:"harvested",oeps:3.28,growth:1.5},D:{m:42,fs:"Adequate",cv:72,hv:"reinvested",oeps:3.10,growth:3.5},PYPL:{m:38,fs:"Adequate",cv:72,hv:"harvested",oeps:4.85,growth:5.5},NICE:{m:32,fs:"Strong",cv:65,hv:"reinvested",oeps:10.0,growth:8.0},FLO:{m:18,fs:"Stretched",cv:72,hv:"harvested",oeps:0.77,growth:1.5}};
+var cutRows=CUT.map(function(c){var x=CUTX[c.t]||{};var row={ticker:c.t,company:c.c,moat100:(x.m!=null?x.m:c.m),gate:"cut",cutRsn:c.rsn,crux:c.w,price:(BASE[c.t]!=null?BASE[c.t]:(typeof c.p==="number"?c.p:0)),snapPrice:(BASE[c.t]!=null?BASE[c.t]:(typeof c.p==="number"?c.p:0)),live:false,chgPct:null,oeps:(x.oeps!=null?x.oeps:null),growth:(x.growth!=null?x.growth:0),buyBelow:(typeof c.bb==="number"?c.bb:null),mdir:c.mdir,hv:x.hv,fs:x.fs,convScore:x.cv,catalyst:(c.cat||"—"),updDate:"2026-06-03",updW:"Report-grounded dive 2026-06-03 ("+c.rsn+") — cut by the screener, not for lack of analysis."};recompute(row);if(row.oeps==null){row.retLive=false;row.retDisplay=(c.ret||"—");row.impliedMid=(x.im!=null?x.im:null);row.score=(row.impliedMid!=null&&row.convScore!=null?row.impliedMid*row.convScore/100:null);}return row;});
 var fullRows=RAW.concat(cutRows);
 var _fset={};Object.keys(FACTOR).forEach(function(k){FACTOR[k].forEach(function(t){_fset[t]=1;});});
 [["pass",passRows.length,"Toll Booth &amp; Moat"],["full",fullRows.length,"Full universe"],["factor",Object.keys(_fset).length,"Factor check"]].forEach(function(x){var el=document.querySelector('[data-t="'+x[0]+'"]');if(el)el.innerHTML=x[2]+' <span class="tcount">'+x[1]+'</span>';});
@@ -488,9 +488,9 @@ async function pool(items,n,fn){var i=0;async function w(){while(i<items.length)
 function applyQuote(r,q,cache){if(q&&plausible(q.price,r.snapPrice)){r.price=q.price;r.chgPct=q.chg;r.live=true;r.badData=false;recompute(r);cache[r.ticker]={price:q.price,chg:q.chg,t:Date.now()};return "ok";}if(q){r.badData=true;recompute(r);return "bad";}return "fail";}
 async function refreshPrices(force){
  var now0=Date.now();var cache=loadCache();var stale=[];
- RAW.forEach(function(r){var c=cache[r.ticker];if(!force&&c&&plausible(c.price,r.snapPrice)){r.price=c.price;r.chgPct=c.chg;r.live=true;recompute(r);if(!(c.t&&(now0-c.t)<PRICE_TTL_MS))stale.push(r);}else{if(c&&!plausible(c.price,r.snapPrice))delete cache[r.ticker];stale.push(r);}});
+ fullRows.forEach(function(r){var c=cache[r.ticker];if(!force&&c&&plausible(c.price,r.snapPrice)){r.price=c.price;r.chgPct=c.chg;r.live=true;recompute(r);if(!(c.t&&(now0-c.t)<PRICE_TTL_MS))stale.push(r);}else{if(c&&!plausible(c.price,r.snapPrice))delete cache[r.ticker];stale.push(r);}});
  renderAll();
- if(stale.length===0){setStatus("live","Live prices (cached <4h) · computed off price for "+RAW.filter(function(r){return r.oeps!=null;}).length+" names.");return;}
+ if(stale.length===0){setStatus("live","Live prices (cached <4h) · computed off price for "+fullRows.filter(function(r){return r.oeps!=null;}).length+" names.");return;}
  setStatus("loading","Loading live prices… (0/"+stale.length+")");
  var ok=0,bad=0,fail=0,done=0;
  var quotes={};
@@ -505,7 +505,7 @@ async function refreshPrices(force){
  saveCache(cache);renderAll();
  var when=new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
  if(ok===0&&bad===0)setStatus("off","Public price feed didn't load in this browser — showing most recent close ("+SNAP_DATE+"). (Click ↻ to retry.)");
- else if(fail===0&&bad===0)setStatus("live","Live prices · "+when+" · computed off price for "+RAW.filter(function(r){return r.oeps!=null;}).length+" names.");
+ else if(fail===0&&bad===0)setStatus("live","Live prices · "+when+" · computed off price for "+fullRows.filter(function(r){return r.oeps!=null;}).length+" names.");
  else setStatus("part","Live prices · "+when+" · "+ok+" live, "+(fail+bad)+" on last close"+(bad?(" ("+bad+" rejected)"):"")+".");
 }
 
